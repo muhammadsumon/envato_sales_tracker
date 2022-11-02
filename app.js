@@ -100,7 +100,7 @@ function updateLog(status) {
 }
 
 setInterval(() => {
-    const currentTime = new Date().toLocaleTimeString();
+    const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: "Asia/Dhaka" });
     const NightTime = "12:00:00 AM";
     const DayTime = "12:00:00 PM";
 
@@ -115,8 +115,6 @@ setInterval(() => {
     } else {
         status = "\n Failed to Check";
     }
-
-    console.log(currentTime)
 }, 1000);
 
 
