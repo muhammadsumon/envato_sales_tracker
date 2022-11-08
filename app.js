@@ -2,7 +2,6 @@ const http = require("http");
 const fs = require("fs");
 const axios = require("axios");
 const nodemailer = require('nodemailer');
-const cron = require('node-cron');
 const dotenv = require("dotenv").config();
 const port = process.env.PORT || "5050";
 let token = process.env.Enavto_Token;
