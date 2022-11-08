@@ -118,6 +118,10 @@ setInterval(() => {
         status = "Fired Day Time";
         updateLog(status);
     }
+
+    fs.writeFile("./status.txt", `\n ${ct} - ${"Last Run"}`, (errors, data) => {
+        errors ? status = "failed to write data" : null;
+    });
 }, 1000);
 
 http.createServer(function (req, res) {
