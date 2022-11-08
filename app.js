@@ -1,20 +1,24 @@
 const http = require("http");
 const fs = require("fs");
 const axios = require("axios");
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 const dotenv = require("dotenv").config();
+const port = process.env.PORT || "5050";
 let token = process.env.Enavto_Token;
 let username = process.env.Envato_Username;
 let smtp_host = process.env.SMTP_Host;
 let smtp_port = process.env.SMTP_Port;
 let smtp_user = process.env.SMTP_Username;
 let smtp_pass = process.env.SMTP_Password;
+let ct = new Date().toLocaleTimeString('en-US', { timeZone: "Asia/Dhaka" });
 let status = "";
 
 function sendMail(increasedSale, currentSale, previousSale) {
     var transporter = nodemailer.createTransport({
         host: smtp_host,
         port: smtp_port,
+        secure: false,
         auth: {
             user: smtp_user,
             pass: smtp_pass
@@ -22,10 +26,10 @@ function sendMail(increasedSale, currentSale, previousSale) {
     });
 
     var mailOptions = {
-        from: 'Themeforest sales.themeforest@gmail.com',
+        from: 'Themeforest sales-tracker@muhammadsumon.me',
         to: 'muhammadsumon.me@gmail.com',
         subject: 'You got a new sale',
-        text: `Congratulations! You will be a great author soon. Sales Increased - ${increasedSale}`,
+        text: ` Increased - ${increasedSale} | Congratulations! You will be a great author soon.`,
         html: `
         <div>
         <div>
@@ -49,10 +53,10 @@ function sendMail(increasedSale, currentSale, previousSale) {
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            status = `\n ${error}`
+            status = `${error}`
             updateLog(status);
         } else {
-            status = '\n Email sent: ' + info.response;
+            status = 'Email sent: ' + info.response;
             updateLog(status);
         }
     });
@@ -73,20 +77,21 @@ function getTotalSale() {
 
             if (isSaleIncreased) {
                 sendMail(saleIncreased, currentSale, previousSale);
-
-                fs.writeFile("./previousSale.txt", `${currentSale}`, (errors, data) => {
-                    errors ? status = "failed to write data" : null;
-                });
+                updateLog("increased");
+                // fs.writeFile("./previousSale.txt", `${currentSale}`, (errors, data) => {
+                //     errors ? status = "failed to write data" : null;
+                // });
             } else {
-                status = `\n No Sale Increased`;
+                status = `No Sale Increased`;
                 updateLog(status);
             }
         } else {
-            status = `\n ${res.data}`;
+            status = `${res.data}`;
+            updateLog(status);
         }
     }).catch(err => {
         if (err) {
-            fs.appendFile("./log.txt", `\n Error - ${err}`, (errors, data) => {
+            fs.appendFile("./log.txt", `Error - ${err}`, (errors, data) => {
                 errors ? status = "failed to write data" : null;
             });
         }
@@ -94,34 +99,32 @@ function getTotalSale() {
 }
 
 function updateLog(status) {
-    fs.appendFile("./log.txt", status, (errors, data) => {
+    fs.appendFile("./log.txt", `\n ${ct} - ${status}`, (errors, data) => {
         errors ? status = "failed to write data" : null;
     });
 }
 
 setInterval(() => {
-    const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: "Asia/Dhaka" });
-    const NightTime = "12:00:00 AM";
-    const DayTime = "12:00:00 PM";
+    let currentTime = new Date().toLocaleTimeString('en-US', { timeZone: "Asia/Dhaka" });
+    let NightTime = "12:00:00 AM";
+    let DayTime = "12:00:00 PM";
+    ct = currentTime;
 
-    if (currentTime === NightTime) {
+    if (ct === NightTime) {
         getTotalSale();
-        status = "\n Fired Night Time";
+        status = "Fired Night Time";
         updateLog(status);
-    } else if (currentTime === DayTime) {
+    } else if (ct === DayTime) {
         getTotalSale();
-        status = "\n Fired Day Time";
+        status = "Fired Day Time";
         updateLog(status);
-    } else {
-        status = "\n Failed to Check";
     }
 }, 1000);
 
-
 http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write(status);
+    res.write(ct);
     res.end();
-}).listen(8080, () => {
+}).listen(port, () => {
     console.log("server started successfully")
 });

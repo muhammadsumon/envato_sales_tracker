@@ -1,0 +1,12 @@
+
+ 2:22:00 PM - Fired Day Time
+ 2:22:06 PM - Email sent: 250 2.0.0 Ok: queued
+ 9:39:12 PM - Fired
+ 9:39:12 PM - increased
+ 9:39:18 PM - Email sent: 250 2.0.0 Ok: queued
+ 9:40:12 PM - Fired
+ 9:40:12 PM - increased
+ 9:40:17 PM - Email sent: 250 2.0.0 Ok: queued
+ 9:41:12 PM - Fired
+ 9:41:12 PM - increased
+ 9:41:17 PM - Email sent: 250 2.0.0 Ok: queued
