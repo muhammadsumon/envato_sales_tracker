@@ -52,7 +52,7 @@ function sendMail(increasedSale, currentSale, previousSale) {
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            status = `${error}`
+            status = `${error}`;
             updateLog(status);
         } else {
             status = 'Email sent: ' + info.response;
@@ -77,9 +77,9 @@ function getTotalSale() {
             if (isSaleIncreased) {
                 sendMail(saleIncreased, currentSale, previousSale);
                 updateLog("increased");
-                // fs.writeFile("./previousSale.txt", `${currentSale}`, (errors, data) => {
-                //     errors ? status = "failed to write data" : null;
-                // });
+                fs.writeFile("./previousSale.txt", `${currentSale}`, (errors, data) => {
+                    errors ? status = "failed to write data" : null;
+                });
             } else {
                 status = `No Sale Increased`;
                 updateLog(status);
@@ -98,11 +98,12 @@ function getTotalSale() {
 }
 
 function updateLog(status) {
-    fs.appendFile("./log.txt", `\n ${ct} - ${status}`, (errors, data) => {
+    let currentDate = new Date().toLocaleString('en-US', { timeZone: "Asia/Dhaka", month: "long", day: "2-digit", year: "numeric" });
+
+    fs.appendFile("./log.txt", `\n ${currentDate} - ${status}`, (errors, data) => {
         errors ? status = "failed to write data" : null;
     });
 }
-
 setInterval(() => {
     let currentTime = new Date().toLocaleTimeString('en-US', { timeZone: "Asia/Dhaka" });
     let NightTime = "12:00:00 AM";
@@ -129,5 +130,5 @@ http.createServer(function (req, res) {
     res.write(ct);
     res.end();
 }).listen(port, () => {
-    console.log("server started successfully")
+    console.log("server started successfully");
 });
